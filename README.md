@@ -3,9 +3,11 @@
 A GNOME Shell extension port of [liquidglass-kde-widgets](https://github.com/jaxparrow07/liquidglass-kde-widgets)
 (macOS-style desktop widgets on a liquid-glass background). Licensed GPL-3.0, like the original.
 
-Ported so far:
+Ported so far (Clocks II, III and Digital are off by default; switch them on in the settings' Clocks page):
 
-- **macOS Clock I** (`clock-analog`)
+- **macOS Clock I, II, III** (`clock-analog`, `clock-analog-2`, `clock-analog-3`): one class with a variant per
+  clock. Clock III's ticks follow the glass edge.
+- **macOS Clock Digital** (`clock-digital`): its tick ring doubles as a seconds hand. Uses GNOME's 12/24-hour setting.
 - **macOS Calendar** (`calendar`): the month grid. The wide layout with upcoming events is not ported yet.
 - **macOS Weather** (`weather`): Small, Medium and Large layouts. Forecasts come from
   [Open-Meteo](https://open-meteo.com) (CC BY 4.0), so there is no account or API key. Pick your city in the
@@ -63,15 +65,18 @@ extension/
   lib/desktopWidget.js      base class: placement, drag, menu, style
   lib/colors.js             color tokens
   lib/draw.js               cairo/Pango text and PNG helpers
+  lib/squircle.js           tick positions along the glass edge (Clock III, Digital)
   lib/weatherData.js        Open-Meteo client and weather view model
   lib/timerModel.js         countdown state, alarm and notification
-  widgets/clockAnalog.js    the analog clock
+  widgets/clockAnalog.js    the analog clocks (I, II, III)
+  widgets/clockDigital.js   the digital clock
   widgets/calendar.js       the calendar
   widgets/weather.js        the weather card
   widgets/timer.js          the timer (pickers, countdown, buttons, presets)
   icons/                    weather icon sets (from the KDE repo)
   schemas/                  GSettings schema
-fonts/                      SF Pro Rounded and SF Pro Display Regular/Light/Thin (installed to ~/.local/share/fonts)
+fonts/                      SF Pro Rounded, SF Pro Display Regular/Light/Thin, Barlow Condensed Medium
+                            (installed to ~/.local/share/fonts)
 ```
 
 ## Adding another widget

@@ -26,6 +26,60 @@
       <summary>In Solid style, use a flat opaque background instead of the glass material</summary>
     </key>
 
+    <!-- Clock II (off by default) -->
+    <key name="clock-analog-2-enabled" type="b">
+      <default>false</default>
+    </key>
+    <key name="clock-analog-2-x" type="i">
+      <default>-1</default>
+    </key>
+    <key name="clock-analog-2-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="clock-analog-2-size" type="i">
+      <default>220</default>
+    </key>
+    <key name="clock-analog-2-smooth-seconds" type="b">
+      <default>true</default>
+    </key>
+    <key name="clock-analog-2-opaque-background" type="b">
+      <default>true</default>
+    </key>
+
+    <!-- Clock III (off by default) -->
+    <key name="clock-analog-3-enabled" type="b">
+      <default>false</default>
+    </key>
+    <key name="clock-analog-3-x" type="i">
+      <default>-1</default>
+    </key>
+    <key name="clock-analog-3-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="clock-analog-3-size" type="i">
+      <default>220</default>
+    </key>
+    <key name="clock-analog-3-smooth-seconds" type="b">
+      <default>true</default>
+    </key>
+
+    <!-- Digital clock (off by default) -->
+    <key name="clock-digital-enabled" type="b">
+      <default>false</default>
+    </key>
+    <key name="clock-digital-x" type="i">
+      <default>-1</default>
+    </key>
+    <key name="clock-digital-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="clock-digital-size" type="i">
+      <default>220</default>
+    </key>
+    <key name="clock-digital-smooth-seconds" type="b">
+      <default>false</default>
+    </key>
+
     <!-- Calendar -->
     <key name="calendar-enabled" type="b">
       <default>true</default>

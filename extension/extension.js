@@ -4,13 +4,17 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {clearImageCache} from './lib/draw.js';
 import {TimerModel} from './lib/timerModel.js';
 import {AnalogClock} from './widgets/clockAnalog.js';
+import {DigitalClock} from './widgets/clockDigital.js';
 import {CalendarWidget} from './widgets/calendar.js';
 import {TimerWidget} from './widgets/timer.js';
 import {WeatherWidget} from './widgets/weather.js';
 
 // Each entry: settings key that toggles the widget, and its class.
 const WIDGETS = [
-    {key: 'clock-analog-enabled', create: (ext, settings) => new AnalogClock(ext, settings)},
+    {key: 'clock-analog-enabled', create: (ext, settings) => new AnalogClock(ext, settings, 'clock-analog')},
+    {key: 'clock-analog-2-enabled', create: (ext, settings) => new AnalogClock(ext, settings, 'clock-analog-2')},
+    {key: 'clock-analog-3-enabled', create: (ext, settings) => new AnalogClock(ext, settings, 'clock-analog-3')},
+    {key: 'clock-digital-enabled', create: (ext, settings) => new DigitalClock(ext, settings)},
     {key: 'calendar-enabled', create: (ext, settings) => new CalendarWidget(ext, settings)},
     {key: 'weather-enabled', create: (ext, settings) => new WeatherWidget(ext, settings)},
     {key: 'timer-enabled', create: (ext, settings) => new TimerWidget(ext, settings)},

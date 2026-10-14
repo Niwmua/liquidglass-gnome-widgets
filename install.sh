@@ -26,7 +26,7 @@ glib-compile-schemas "$DEST/schemas"
 # GNOME Shell draws text through fontconfig, so the dial font has to be
 # installed for the user rather than loaded from the extension folder.
 mkdir -p "$FONT_DIR"
-cp "$HERE/fonts/"*.otf "$FONT_DIR/"
+cp "$HERE/fonts/"*.otf "$HERE/fonts/"*.ttf "$FONT_DIR/"
 fc-cache -f "$FONT_DIR" >/dev/null
 
 if gnome-extensions enable "$UUID" 2>/dev/null; then

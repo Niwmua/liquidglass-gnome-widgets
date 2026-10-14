@@ -116,6 +116,7 @@ export default class LiquidGlassWidgetsPrefs extends ExtensionPreferences {
         window._settings = settings;
         window.set_default_size(640, 720);
 
+        window.add(this._clocksPage(settings));
         window.add(this._widgetsPage(settings));
         window.add(this._appearancePage(settings));
     }
@@ -126,31 +127,57 @@ export default class LiquidGlassWidgetsPrefs extends ExtensionPreferences {
             icon_name: 'preferences-desktop-apps-symbolic',
         });
 
-        const clock = new Adw.PreferencesGroup({
-            title: _('Analog Clock'),
-            description: _('Drag the clock with the left mouse button; right-click it for options.'),
-        });
-        clock.add(switchRow(settings, 'clock-analog-enabled', _('Show on desktop')));
-
-        clock.add(spinRow(settings, 'clock-analog-size', _('Size'), {lower: 120, upper: 600, step: 10}));
-
-        clock.add(switchRow(settings, 'clock-analog-smooth-seconds', _('Sweeping second hand'),
-            _('Off moves the second hand once a second, which uses less power.')));
-        clock.add(switchRow(settings, 'clock-analog-opaque-background', _('Fully opaque background'),
-            _('In Solid style, use a flat dark card instead of the glass material.')));
-
-        clock.add(positionRow(settings, 'clock-analog'));
-
         const general = new Adw.PreferencesGroup({title: _('All Widgets')});
         general.add(switchRow(settings, 'lock-position', _('Lock position'),
             _('Stop widgets from moving when dragged.')));
 
-        page.add(clock);
         page.add(this._calendarGroup(settings));
         page.add(this._weatherGroup(settings));
         page.add(this._timerGroup(settings));
         page.add(general);
         return page;
+    }
+
+    _clocksPage(settings) {
+        const page = new Adw.PreferencesPage({
+            title: _('Clocks'),
+            icon_name: 'preferences-system-time-symbolic',
+        });
+        page.add(this._clockGroup(settings, 'clock-analog', _('Clock I'), {
+            description: _('Numbered dial. Drag a clock with the left mouse button; right-click it for options.'),
+            opaque: true,
+        }));
+        page.add(this._clockGroup(settings, 'clock-analog-2', _('Clock II'), {
+            description: _('Dial with hour marks and no numbers.'),
+            opaque: true,
+        }));
+        page.add(this._clockGroup(settings, 'clock-analog-3', _('Clock III'), {
+            description: _('Ticks around the edge, with 12, 3, 6 and 9.'),
+        }));
+        page.add(this._clockGroup(settings, 'clock-digital', _('Digital Clock'), {
+            description: _('Hours and minutes inside a ring of ticks that counts the seconds. Uses the 12/24-hour format from GNOME Settings.'),
+            secondsTitle: _('Smooth seconds ring'),
+            secondsSubtitle: _('Off moves the ring once a second, which uses less power.'),
+        }));
+        return page;
+    }
+
+    _clockGroup(settings, prefix, title, {
+        description = '',
+        opaque = false,
+        secondsTitle = _('Sweeping second hand'),
+        secondsSubtitle = _('Off moves the second hand once a second, which uses less power.'),
+    } = {}) {
+        const group = new Adw.PreferencesGroup({title, description});
+        group.add(switchRow(settings, `${prefix}-enabled`, _('Show on desktop')));
+        group.add(spinRow(settings, `${prefix}-size`, _('Size'), {lower: 120, upper: 600, step: 10}));
+        group.add(switchRow(settings, `${prefix}-smooth-seconds`, secondsTitle, secondsSubtitle));
+        if (opaque) {
+            group.add(switchRow(settings, `${prefix}-opaque-background`, _('Fully opaque background'),
+                _('In Solid style, use a flat dark card instead of the glass material.')));
+        }
+        group.add(positionRow(settings, prefix));
+        return group;
     }
 
     _calendarGroup(settings) {
