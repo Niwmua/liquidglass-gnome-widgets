@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.liquidglass-widgets"
+          path="/org/gnome/shell/extensions/liquidglass-widgets/">
+
+    <!-- Analog clock -->
+    <key name="clock-analog-enabled" type="b">
+      <default>true</default>
+    </key>
+    <key name="clock-analog-x" type="i">
+      <default>-1</default>
+      <summary>Horizontal position in stage pixels; -1 places it automatically</summary>
+    </key>
+    <key name="clock-analog-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="clock-analog-size" type="i">
+      <default>220</default>
+    </key>
+    <key name="clock-analog-smooth-seconds" type="b">
+      <default>true</default>
+      <summary>Sweep the second hand at the display frame rate instead of ticking once a second</summary>
+    </key>
+    <key name="clock-analog-opaque-background" type="b">
+      <default>true</default>
+      <summary>In Solid style, use a flat opaque background instead of the glass material</summary>
+    </key>
+
+    <!-- Calendar -->
+    <key name="calendar-enabled" type="b">
+      <default>true</default>
+    </key>
+    <key name="calendar-x" type="i">
+      <default>-1</default>
+    </key>
+    <key name="calendar-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="calendar-size" type="i">
+      <default>200</default>
+    </key>
+    <key name="calendar-first-day" type="i">
+      <default>0</default>
+      <summary>0 = from the locale, 1 = Sunday, 2 = Monday</summary>
+    </key>
+
+    <!-- Weather -->
+    <key name="weather-enabled" type="b">
+      <default>true</default>
+    </key>
+    <key name="weather-x" type="i">
+      <default>-1</default>
+    </key>
+    <key name="weather-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="weather-size" type="i">
+      <default>170</default>
+      <summary>Height of the small tile; medium and large tiles scale from it</summary>
+    </key>
+    <key name="weather-layout" type="i">
+      <default>1</default>
+      <summary>0 = Small, 1 = Medium (wide), 2 = Large</summary>
+    </key>
+    <key name="weather-location" type="s">
+      <default>'New York'</default>
+      <summary>Place name shown on the card</summary>
+    </key>
+    <key name="weather-latitude" type="d">
+      <default>40.7128</default>
+      <summary>Latitude and longitude both 0 means look the place name up</summary>
+    </key>
+    <key name="weather-longitude" type="d">
+      <default>-74.0060</default>
+    </key>
+    <key name="weather-temperature-unit" type="i">
+      <default>0</default>
+      <summary>0 = Celsius, 1 = Fahrenheit</summary>
+    </key>
+
+    <!-- Timer -->
+    <key name="timer-enabled" type="b">
+      <default>true</default>
+    </key>
+    <key name="timer-x" type="i">
+      <default>-1</default>
+    </key>
+    <key name="timer-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="timer-size" type="i">
+      <default>180</default>
+    </key>
+    <key name="timer-layout" type="i">
+      <default>1</default>
+      <summary>0 = Small, 1 = Wide (with presets)</summary>
+    </key>
+    <key name="timer-minutes" type="i">
+      <default>5</default>
+      <summary>Minutes last picked on the drum</summary>
+    </key>
+    <key name="timer-seconds" type="i">
+      <default>0</default>
+    </key>
+    <key name="timer-state" type="i">
+      <default>0</default>
+      <summary>Countdown state: 0 = idle, 1 = running, 2 = paused, 3 = finished</summary>
+    </key>
+    <key name="timer-end-time" type="x">
+      <default>0</default>
+      <summary>When a running countdown ends, in ms since the Unix epoch</summary>
+    </key>
+    <key name="timer-remaining" type="x">
+      <default>0</default>
+      <summary>Milliseconds left on a paused countdown</summary>
+    </key>
+
+    <key name="lock-position" type="b">
+      <default>false</default>
+    </key>
+
+    <!-- Style: same entries and defaults as the KDE widgets' main.xml -->
+    <key name="style-mode" type="i">
+      <default>0</default>
+      <summary>0 = Glass, 1 = Solid</summary>
+    </key>
+    <key name="appearance" type="i">
+      <default>0</default>
+      <summary>0 = Dark, 1 = Light, 2 = Follow system</summary>
+    </key>
+    <key name="corner-radius" type="i">
+      <default>100</default>
+    </key>
+    <key name="roundness-x10" type="i">
+      <default>75</default>
+    </key>
+    <key name="refract-thickness" type="i">
+      <default>35</default>
+    </key>
+    <key name="refract-ior-x100" type="i">
+      <default>170</default>
+    </key>
+    <key name="refract-scale" type="i">
+      <default>65</default>
+    </key>
+    <key name="tint-alpha-pct" type="i">
+      <default>10</default>
+    </key>
+    <key name="chroma-strength-pct" type="i">
+      <default>30</default>
+    </key>
+    <key name="spec-strength-pct" type="i">
+      <default>70</default>
+    </key>
+    <key name="blur-radius-px" type="i">
+      <default>6</default>
+    </key>
+  </schema>
+</schemalist>

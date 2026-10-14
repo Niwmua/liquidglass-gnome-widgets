@@ -1,0 +1,11 @@
+{
+  "uuid": "liquidglass-widgets@local",
+  "name": "Liquid Glass Widgets",
+  "description": "macOS-style desktop widgets on a liquid-glass background. A GNOME Shell port of liquidglass-kde-widgets.",
+  "shell-version": ["48", "49", "50"],
+  "session-modes": ["user", "unlock-dialog"],
+  "settings-schema": "org.gnome.shell.extensions.liquidglass-widgets",
+  "gettext-domain": "liquidglass-widgets",
+  "url": "https://github.com/jaxparrow07/liquidglass-kde-widgets",
+  "version-name": "0.1"
+}
