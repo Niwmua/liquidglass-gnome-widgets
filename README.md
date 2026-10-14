@@ -12,6 +12,10 @@ Ported so far (Clocks II, III and Digital are off by default; switch them on in 
 - **macOS Weather** (`weather`): Small, Medium and Large layouts. Forecasts come from
   [Open-Meteo](https://open-meteo.com) (CC BY 4.0), so there is no account or API key. Pick your city in the
   settings with **Search for a city**.
+- **macOS Music** (`music`): now playing for any MPRIS player (Spotify, browsers, VLC, …), in Square, Wide, Bar
+  and Tall layouts. It has a seek bar, an album-art flip on track change, and glass that takes on the album's colors.
+  Wide and Tall can show synced lyrics from [LRCLIB](https://lrclib.net), which are only looked up while the lyrics
+  view is open.
 - **macOS Timer** (`timer`): drum pickers (scroll or drag them), rolling-digit countdown, and a preset list in the
   wide layout. A running timer keeps counting and rings while the screen is locked, and comes back after a log out.
 
@@ -45,6 +49,8 @@ installing or updating. Settings changes apply live.
 | Calendar/weather QML layouts | One `St.DrawingArea` per card, painted with cairo + Pango (`lib/draw.js`) |
 | `WeatherData.qml` (`XMLHttpRequest`) | `lib/weatherData.js` (libsoup 3), times in the forecast location's own time zone |
 | Free resizing of the applet | Size setting, plus a layout choice for the weather and the timer |
+| Plasma `Mpris2Model` | `lib/mpris.js` (Gio D-Bus proxies; picks the playing or most recently active player) |
+| QML `Image` + `MultiEffect` for album art | `lib/albumArt.js`: GdkPixbuf → cairo surface, median-cut palette as in the KDE widget |
 | Timer state in the plasmoid, KNotification | `lib/timerModel.js` owned by the extension and saved in GSettings; a MessageTray notification with the `alarm-clock-elapsed` sound |
 
 Glass settings (style, appearance, shape and glass sliders) are shared by all widgets; position and size are per widget.
@@ -68,12 +74,17 @@ extension/
   lib/squircle.js           tick positions along the glass edge (Clock III, Digital)
   lib/weatherData.js        Open-Meteo client and weather view model
   lib/timerModel.js         countdown state, alarm and notification
+  lib/canvasButton.js       clickable drawing area (timer and music buttons)
+  lib/mpris.js              media players over D-Bus
+  lib/albumArt.js           album art loading and color sampling
+  lib/lyrics.js             LRCLIB client and LRC parser
   widgets/clockAnalog.js    the analog clocks (I, II, III)
   widgets/clockDigital.js   the digital clock
   widgets/calendar.js       the calendar
   widgets/weather.js        the weather card
   widgets/timer.js          the timer (pickers, countdown, buttons, presets)
-  icons/                    weather icon sets (from the KDE repo)
+  widgets/music.js          the music player (layouts, seek bar, lyrics view)
+  icons/                    weather icon sets and music controls (from the KDE repo)
   schemas/                  GSettings schema
 fonts/                      SF Pro Rounded, SF Pro Display Regular/Light/Thin, Barlow Condensed Medium
                             (installed to ~/.local/share/fonts)

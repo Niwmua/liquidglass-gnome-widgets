@@ -169,6 +169,37 @@
       <summary>Milliseconds left on a paused countdown</summary>
     </key>
 
+    <!-- Music -->
+    <key name="music-enabled" type="b">
+      <default>true</default>
+    </key>
+    <key name="music-x" type="i">
+      <default>-1</default>
+    </key>
+    <key name="music-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="music-size" type="i">
+      <default>200</default>
+      <summary>Height of the square and wide layouts; the others scale from it</summary>
+    </key>
+    <key name="music-layout" type="i">
+      <default>1</default>
+      <summary>0 = Square, 1 = Wide, 2 = Bar, 3 = Tall</summary>
+    </key>
+    <key name="music-lyrics-blur" type="b">
+      <default>true</default>
+      <summary>Blur upcoming lyric lines</summary>
+    </key>
+    <key name="music-lyrics-title" type="b">
+      <default>true</default>
+      <summary>Show the track title above the lyrics</summary>
+    </key>
+    <key name="music-hide-when-idle" type="b">
+      <default>false</default>
+      <summary>Hide the widget 30 seconds after playback stops</summary>
+    </key>
+
     <key name="lock-position" type="b">
       <default>false</default>
     </key>

@@ -16,6 +16,7 @@ import St from 'gi://St';
 
 import {gettext as _, ngettext} from 'resource:///org/gnome/shell/extensions/extension.js';
 
+import {CanvasButton} from '../lib/canvasButton.js';
 import {DesktopWidget} from '../lib/desktopWidget.js';
 import {setSource, TextPainter} from '../lib/draw.js';
 import {TimerState} from '../lib/timerModel.js';
@@ -67,48 +68,6 @@ function fade(actor, show, animate) {
         },
     });
 }
-
-// A drawing area that acts as a button: paint(cr, button) draws it, and
-// 'clicked' fires on a primary press and release inside it.
-const CanvasButton = GObject.registerClass({
-    Signals: {'clicked': {}},
-}, class CanvasButton extends St.DrawingArea {
-    _init(paint) {
-        super._init({reactive: true, track_hover: true});
-        this.pressed = false;
-        this.connect('repaint', () => {
-            const cr = this.get_context();
-            paint(cr, this);
-            cr.$dispose();
-        });
-        this.connect('notify::hover', () => this.queue_repaint());
-    }
-
-    vfunc_button_press_event(event) {
-        if (event.get_button() !== Clutter.BUTTON_PRIMARY)
-            return Clutter.EVENT_PROPAGATE;
-        this.pressed = true;
-        this.queue_repaint();
-        return Clutter.EVENT_STOP;
-    }
-
-    vfunc_button_release_event(event) {
-        if (event.get_button() !== Clutter.BUTTON_PRIMARY || !this.pressed)
-            return Clutter.EVENT_PROPAGATE;
-        this.pressed = false;
-        this.queue_repaint();
-        this.emit('clicked');
-        return Clutter.EVENT_STOP;
-    }
-
-    vfunc_leave_event(event) {
-        if (this.pressed) {
-            this.pressed = false;
-            this.queue_repaint();
-        }
-        return super.vfunc_leave_event(event);
-    }
-});
 
 // Port of CylinderPicker.qml: a drum of two-digit numbers that turns with
 // the mouse wheel or a drag, flicks with momentum and snaps to a value.

@@ -134,6 +134,7 @@ export default class LiquidGlassWidgetsPrefs extends ExtensionPreferences {
         page.add(this._calendarGroup(settings));
         page.add(this._weatherGroup(settings));
         page.add(this._timerGroup(settings));
+        page.add(this._musicGroup(settings));
         page.add(general);
         return page;
     }
@@ -200,6 +201,23 @@ export default class LiquidGlassWidgetsPrefs extends ExtensionPreferences {
             [_('Small'), _('Wide, with presets')]));
         group.add(spinRow(settings, 'timer-size', _('Size'), {lower: 140, upper: 400, step: 10}));
         group.add(positionRow(settings, 'timer'));
+        return group;
+    }
+
+    _musicGroup(settings) {
+        const group = new Adw.PreferencesGroup({
+            title: _('Music'),
+            description: _('Shows what’s playing in any app that supports media controls (MPRIS). Lyrics come from LRCLIB.net and are only looked up while the lyrics view is open.'),
+        });
+        group.add(switchRow(settings, 'music-enabled', _('Show on desktop')));
+        group.add(comboRow(settings, 'music-layout', _('Layout'),
+            [_('Square'), _('Wide'), _('Bar'), _('Tall')]));
+        group.add(spinRow(settings, 'music-size', _('Size'), {lower: 120, upper: 400, step: 10}));
+        group.add(switchRow(settings, 'music-lyrics-blur', _('Blur upcoming lyrics')));
+        group.add(switchRow(settings, 'music-lyrics-title', _('Track title above lyrics')));
+        group.add(switchRow(settings, 'music-hide-when-idle', _('Hide when nothing is playing'),
+            _('Fades the widget out 30 seconds after playback stops.')));
+        group.add(positionRow(settings, 'music'));
         return group;
     }
 

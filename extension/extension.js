@@ -6,6 +6,7 @@ import {TimerModel} from './lib/timerModel.js';
 import {AnalogClock} from './widgets/clockAnalog.js';
 import {DigitalClock} from './widgets/clockDigital.js';
 import {CalendarWidget} from './widgets/calendar.js';
+import {MusicWidget} from './widgets/music.js';
 import {TimerWidget} from './widgets/timer.js';
 import {WeatherWidget} from './widgets/weather.js';
 
@@ -18,6 +19,7 @@ const WIDGETS = [
     {key: 'calendar-enabled', create: (ext, settings) => new CalendarWidget(ext, settings)},
     {key: 'weather-enabled', create: (ext, settings) => new WeatherWidget(ext, settings)},
     {key: 'timer-enabled', create: (ext, settings) => new TimerWidget(ext, settings)},
+    {key: 'music-enabled', create: (ext, settings) => new MusicWidget(ext, settings)},
 ];
 
 // The extension also runs on the lock screen ("session-modes" in

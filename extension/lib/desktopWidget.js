@@ -96,8 +96,7 @@ class DesktopWidget extends St.Widget {
             refractIOR: s.get_int('refract-ior-x100') / 100,
             refractScale: s.get_int('refract-scale'),
             chromaStrength: s.get_int('chroma-strength-pct') / 100,
-            tint: this._colors.glassTint,
-            tintAlpha: s.get_int('tint-alpha-pct') / 100,
+            ...this.glassTint(this._colors, s.get_int('tint-alpha-pct') / 100),
             specStrength: s.get_int('spec-strength-pct') / 100,
             blurRadius: s.get_int('blur-radius-px'),
             ...this.solidBackground(this._colors),
@@ -261,6 +260,11 @@ class DesktopWidget extends St.Widget {
     // primary monitor's work area.
     defaultPosition(area, width, _height, margin) {
         return [area.x + area.width - width - margin, area.y + margin];
+    }
+
+    // {tint, tintAlpha} for the glass in Glass style.
+    glassTint(colors, tintAlpha) {
+        return {tint: colors.glassTint, tintAlpha};
     }
 
     // {solid, solidColor, solidColorBottom?} for the glass backdrop.
