@@ -61,6 +61,8 @@ export const ANALOG_VARIANTS = {
         slot: 3,
     },
 };
+// City III: Clock III's face showing another city's time (see worldClock.js).
+ANALOG_VARIANTS['city-3'] = {...ANALOG_VARIANTS['clock-analog-3'], slot: 2, row: 1};
 
 function setSource(cr, c) {
     cr.setSourceRGBA(c.r, c.g, c.b, c.a);
@@ -135,10 +137,12 @@ class AnalogClock extends DesktopWidget {
 
     // --- DesktopWidget hooks ---
 
-    defaultPosition(area, width, _height, margin) {
-        // Top-right; the other clock variants line up to its left.
+    defaultPosition(area, width, height, margin) {
+        // Top-right; the other clock variants line up to its left, and the
+        // world clocks in a second row.
         const x = area.x + area.width - width - margin - this._variant.slot * (width + margin / 2);
-        return [Math.max(area.x + margin, x), area.y + margin];
+        const y = area.y + margin + (this._variant.row ?? 0) * (height + margin / 2);
+        return [Math.max(area.x + margin, x), y];
     }
 
     solidBackground(colors) {
@@ -215,8 +219,14 @@ class AnalogClock extends DesktopWidget {
         });
     }
 
+    // The wall time to show, as a Date read with its local getters.
+    // World clocks shift it to their city.
+    now() {
+        return new Date();
+    }
+
     _tick() {
-        const d = new Date();
+        const d = this.now();
         const sec = d.getSeconds() + (this._smooth ? d.getMilliseconds() / 1000 : 0);
         const min = d.getMinutes() + sec / 60;
         const hr = (d.getHours() % 12) + min / 60;
@@ -249,7 +259,11 @@ class AnalogClock extends DesktopWidget {
         }
 
         this._paintNumerals(cr, g);
+        this.paintAnnotations(cr, g);
     }
+
+    // Extra text on the dial (world clocks: city code and hour difference).
+    paintAnnotations(_cr, _g) {}
 
     // Clock I: pill ticks, majors at 75%, minors at 30%.
     _paintMinuteTicks(cr, g) {

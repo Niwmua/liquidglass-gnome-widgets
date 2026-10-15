@@ -22,15 +22,17 @@ import {DesktopWidget} from '../lib/desktopWidget.js';
 import {setSource, TextPainter} from '../lib/draw.js';
 import {perimeterTicks} from '../lib/squircle.js';
 
-const PREFIX = 'clock-digital';
 const FONT_FAMILY = 'Barlow Condensed';
 const TRAIL_DEGREES = 270;
-const SLOT = 1; // position in the row of clocks along the top-right
 
 export const DigitalClock = GObject.registerClass(
 class DigitalClock extends DesktopWidget {
-    _init(extension, settings) {
-        super._init(extension, settings, PREFIX);
+    // slot/row: where it first appears in the grid of clocks at the top
+    // right (column from the right, row from the top).
+    _init(extension, settings, prefix = 'clock-digital', {slot = 1, row = 0} = {}) {
+        super._init(extension, settings, prefix);
+        this._slot = slot;
+        this._row = row;
 
         this._ring = new St.DrawingArea();
         this._ring.connect('repaint', () => {
@@ -55,7 +57,7 @@ class DigitalClock extends DesktopWidget {
         this._timeline = new Clutter.Timeline({actor: this, duration: 1000, repeat_count: -1});
         this._timeline.connect('new-frame', () => this._ring.queue_repaint());
         this._tickSourceId = 0;
-        settings.connectObject(`changed::${PREFIX}-smooth-seconds`, () => this._startTicking(), this);
+        settings.connectObject(`changed::${prefix}-smooth-seconds`, () => this._startTicking(), this);
 
         this.start();
         this._startTicking();
@@ -63,9 +65,10 @@ class DigitalClock extends DesktopWidget {
 
     // --- DesktopWidget hooks ---
 
-    defaultPosition(area, width, _height, margin) {
-        const x = area.x + area.width - width - margin - SLOT * (width + margin / 2);
-        return [Math.max(area.x + margin, x), area.y + margin];
+    defaultPosition(area, width, height, margin) {
+        const x = area.x + area.width - width - margin - this._slot * (width + margin / 2);
+        const y = area.y + margin + this._row * (height + margin / 2);
+        return [Math.max(area.x + margin, x), y];
     }
 
     styleChanged(colors) {
@@ -107,7 +110,7 @@ class DigitalClock extends DesktopWidget {
             GLib.source_remove(this._tickSourceId);
         this._tickSourceId = 0;
 
-        this._smooth = this._settings.get_boolean(`${PREFIX}-smooth-seconds`);
+        this._smooth = this._settings.get_boolean(`${this._prefix}-smooth-seconds`);
         this._ring.queue_repaint();
         if (this._smooth)
             this._timeline.start();
@@ -175,7 +178,7 @@ class DigitalClock extends DesktopWidget {
 
         const [w, h] = this._time.get_surface_size();
         const minSide = Math.min(w, h);
-        const now = new Date();
+        const now = this.now();
         const use24 = this._interfaceSettings.get_string('clock-format') === '24h';
         const hours = use24 ? String(now.getHours()).padStart(2, '0') : String((now.getHours() + 11) % 12 + 1);
         const minutes = String(now.getMinutes()).padStart(2, '0');
@@ -215,5 +218,15 @@ class DigitalClock extends DesktopWidget {
         }
         x += dot + gap;
         text.draw(minutes, x, cy, font, {...opts, valign: 0.5});
+
+        this.paintAnnotations(cr, w, h);
     }
+
+    // The wall time to show, as a Date read with its local getters.
+    now() {
+        return new Date();
+    }
+
+    // Extra text around the time (world clock: city code and difference).
+    paintAnnotations(_cr, _w, _h) {}
 });

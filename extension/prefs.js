@@ -5,6 +5,8 @@ import Soup from 'gi://Soup?version=3.0';
 
 import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
+import {knownCities, lookupCity} from './lib/worldTime.js';
+
 // Glass keys restored by "Reset" on the Appearance page.
 const GLASS_KEYS = [
     'corner-radius', 'roundness-x10', 'refract-thickness', 'refract-ior-x100',
@@ -79,6 +81,111 @@ function positionRow(settings, prefix) {
     });
     row.add_suffix(reset);
     return row;
+}
+
+// Zones for the city search: the city table plus every zone in the
+// system's zone1970.tab.
+let zoneChoices = null;
+function cityChoices() {
+    if (zoneChoices)
+        return zoneChoices;
+    const byZone = new Map(knownCities().map(c => [c.zone, c]));
+    try {
+        const [, bytes] = GLib.file_get_contents('/usr/share/zoneinfo/zone1970.tab');
+        for (const line of new TextDecoder().decode(bytes).split('\n')) {
+            const zone = line.startsWith('#') ? null : line.split('\t')[2];
+            if (zone && !byZone.has(zone))
+                byZone.set(zone, {zone, ...lookupCity(zone)});
+        }
+    } catch (e) {
+        console.warn(`liquidglass-widgets: zone list: ${e.message}`);
+    }
+    zoneChoices = [...byZone.values()];
+    return zoneChoices;
+}
+
+// Rows editing a list of cities in `key` (strv of "Zone" or "Zone|Label"):
+// one row per city with a remove button, and a search entry that adds
+// (or, with max 1, replaces) a city.
+function addCityRows(group, settings, key, max) {
+    let rows = [];
+    const search = new Adw.EntryRow({
+        title: max === 1 ? _('Change city or time zone') : _('Add a city or time zone'),
+        show_apply_button: true,
+    });
+    let resultRows = [];
+
+    const cityRows = () => {
+        rows.forEach(r => group.remove(r));
+        const entries = settings.get_strv(key);
+        rows = entries.map((entry, i) => {
+            const [zone, label] = entry.split('|');
+            const row = new Adw.ActionRow({title: label || lookupCity(zone).name, subtitle: zone});
+            if (max > 1) {
+                const remove = new Gtk.Button({
+                    icon_name: 'user-trash-symbolic',
+                    valign: Gtk.Align.CENTER,
+                    css_classes: ['flat'],
+                    tooltip_text: _('Remove'),
+                });
+                remove.connect('clicked', () => {
+                    const list = settings.get_strv(key);
+                    list.splice(i, 1);
+                    settings.set_strv(key, list);
+                });
+                row.add_suffix(remove);
+            }
+            return row;
+        });
+        // Keep the list above the search entry.
+        if (search.get_parent())
+            group.remove(search);
+        resultRows.forEach(r => group.remove(r));
+        rows.forEach(r => group.add(r));
+        const full = max > 1 && entries.length >= max;
+        search.sensitive = !full;
+        search.title = full ? _('Up to %d cities').replace('%d', max)
+            : (max === 1 ? _('Change city or time zone') : _('Add a city or time zone'));
+        group.add(search);
+        resultRows.forEach(r => group.add(r));
+    };
+
+    const showResults = list => {
+        resultRows.forEach(r => group.remove(r));
+        resultRows = list;
+        resultRows.forEach(r => group.add(r));
+    };
+
+    search.connect('apply', () => {
+        const query = search.text.trim().toLowerCase();
+        if (!query)
+            return;
+        const fold = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        const q = fold(query);
+        const matches = cityChoices()
+            .filter(c => fold(c.name).includes(q) || c.code.toLowerCase() === q || fold(c.zone).includes(q))
+            .slice(0, 8);
+        if (matches.length === 0) {
+            showResults([new Adw.ActionRow({title: _('No matching time zone'), css_classes: ['dim-label']})]);
+            return;
+        }
+        showResults(matches.map(c => {
+            const row = new Adw.ActionRow({title: c.name, subtitle: c.zone, activatable: true});
+            row.add_suffix(new Gtk.Image({icon_name: 'list-add-symbolic'}));
+            row.connect('activated', () => {
+                const list = max === 1 ? [] : settings.get_strv(key);
+                if (!list.some(e => e.split('|')[0] === c.zone))
+                    list.push(c.zone);
+                settings.set_strv(key, list.slice(0, max));
+                search.text = '';
+                showResults([]);
+            });
+            return row;
+        }));
+    });
+
+    settings.connect(`changed::${key}`, cityRows);
+    cityRows();
 }
 
 const GEOCODE_URL = 'https://geocoding-api.open-meteo.com/v1/search';
@@ -160,7 +267,36 @@ export default class LiquidGlassWidgetsPrefs extends ExtensionPreferences {
             secondsTitle: _('Smooth seconds ring'),
             secondsSubtitle: _('Off moves the ring once a second, which uses less power.'),
         }));
+        page.add(this._cityGroup(settings, 'city-1', _('World Clock I'), {
+            description: _('Up to four cities on numbered dials. Each dial is light in its city’s daytime and dark at night.'),
+            multi: true,
+        }));
+        page.add(this._cityGroup(settings, 'city-2', _('World Clock II'), {
+            description: _('Up to four cities on dials with hour marks.'),
+            multi: true,
+        }));
+        page.add(this._cityGroup(settings, 'city-3', _('World Clock III'), {
+            description: _('One city on the edge-tick dial, with its hour difference.'),
+        }));
+        page.add(this._cityGroup(settings, 'city-digital', _('World Clock Digital'), {
+            description: _('One city on the digital clock.'),
+        }));
         return page;
+    }
+
+    _cityGroup(settings, prefix, title, {description, multi}) {
+        const group = this._clockGroup(settings, prefix, title, {
+            description,
+            opaque: multi,
+            withPosition: false,
+        });
+        if (multi) {
+            group.add(comboRow(settings, `${prefix}-layout`, _('Layout'),
+                [_('Grid'), _('Row, with city names')]));
+        }
+        group.add(positionRow(settings, prefix));
+        addCityRows(group, settings, `${prefix}-cities`, multi ? 4 : 1);
+        return group;
     }
 
     _clockGroup(settings, prefix, title, {
@@ -168,6 +304,7 @@ export default class LiquidGlassWidgetsPrefs extends ExtensionPreferences {
         opaque = false,
         secondsTitle = _('Sweeping second hand'),
         secondsSubtitle = _('Off moves the second hand once a second, which uses less power.'),
+        withPosition = true,
     } = {}) {
         const group = new Adw.PreferencesGroup({title, description});
         group.add(switchRow(settings, `${prefix}-enabled`, _('Show on desktop')));
@@ -177,7 +314,8 @@ export default class LiquidGlassWidgetsPrefs extends ExtensionPreferences {
             group.add(switchRow(settings, `${prefix}-opaque-background`, _('Fully opaque background'),
                 _('In Solid style, use a flat dark card instead of the glass material.')));
         }
-        group.add(positionRow(settings, prefix));
+        if (withPosition)
+            group.add(positionRow(settings, prefix));
         return group;
     }
 

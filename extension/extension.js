@@ -9,6 +9,7 @@ import {CalendarWidget} from './widgets/calendar.js';
 import {MusicWidget} from './widgets/music.js';
 import {TimerWidget} from './widgets/timer.js';
 import {WeatherWidget} from './widgets/weather.js';
+import {CityAnalogClock, CityDigitalClock, CityMultiClock} from './widgets/worldClock.js';
 
 // Each entry: settings key that toggles the widget, and its class.
 const WIDGETS = [
@@ -16,6 +17,10 @@ const WIDGETS = [
     {key: 'clock-analog-2-enabled', create: (ext, settings) => new AnalogClock(ext, settings, 'clock-analog-2')},
     {key: 'clock-analog-3-enabled', create: (ext, settings) => new AnalogClock(ext, settings, 'clock-analog-3')},
     {key: 'clock-digital-enabled', create: (ext, settings) => new DigitalClock(ext, settings)},
+    {key: 'city-1-enabled', create: (ext, settings) => new CityMultiClock(ext, settings, 'city-1')},
+    {key: 'city-2-enabled', create: (ext, settings) => new CityMultiClock(ext, settings, 'city-2')},
+    {key: 'city-3-enabled', create: (ext, settings) => new CityAnalogClock(ext, settings)},
+    {key: 'city-digital-enabled', create: (ext, settings) => new CityDigitalClock(ext, settings)},
     {key: 'calendar-enabled', create: (ext, settings) => new CalendarWidget(ext, settings)},
     {key: 'weather-enabled', create: (ext, settings) => new WeatherWidget(ext, settings)},
     {key: 'timer-enabled', create: (ext, settings) => new TimerWidget(ext, settings)},

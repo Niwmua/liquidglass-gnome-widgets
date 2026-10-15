@@ -80,6 +80,104 @@
       <default>false</default>
     </key>
 
+    <!-- City I (off by default) -->
+    <key name="city-1-enabled" type="b">
+      <default>false</default>
+    </key>
+    <key name="city-1-x" type="i">
+      <default>-1</default>
+    </key>
+    <key name="city-1-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="city-1-size" type="i">
+      <default>200</default>
+    </key>
+    <key name="city-1-smooth-seconds" type="b">
+      <default>true</default>
+    </key>
+    <key name="city-1-cities" type="as">
+      <default>['America/Los_Angeles', 'Europe/London', 'Asia/Tokyo', 'Australia/Sydney']</default>
+      <summary>Time zones shown, as "Zone/Id" or "Zone/Id|Label"</summary>
+    </key>
+    <key name="city-1-layout" type="i">
+      <default>0</default>
+      <summary>0 = Grid, 1 = Row (with names); one city always shows a single dial</summary>
+    </key>
+    <key name="city-1-opaque-background" type="b">
+      <default>true</default>
+    </key>
+
+    <!-- City II (off by default) -->
+    <key name="city-2-enabled" type="b">
+      <default>false</default>
+    </key>
+    <key name="city-2-x" type="i">
+      <default>-1</default>
+    </key>
+    <key name="city-2-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="city-2-size" type="i">
+      <default>200</default>
+    </key>
+    <key name="city-2-smooth-seconds" type="b">
+      <default>true</default>
+    </key>
+    <key name="city-2-cities" type="as">
+      <default>['America/Los_Angeles', 'Europe/London', 'Asia/Tokyo', 'Australia/Sydney']</default>
+      <summary>Time zones shown, as "Zone/Id" or "Zone/Id|Label"</summary>
+    </key>
+    <key name="city-2-layout" type="i">
+      <default>0</default>
+      <summary>0 = Grid, 1 = Row (with names); one city always shows a single dial</summary>
+    </key>
+    <key name="city-2-opaque-background" type="b">
+      <default>true</default>
+    </key>
+
+    <!-- City III (off by default) -->
+    <key name="city-3-enabled" type="b">
+      <default>false</default>
+    </key>
+    <key name="city-3-x" type="i">
+      <default>-1</default>
+    </key>
+    <key name="city-3-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="city-3-size" type="i">
+      <default>220</default>
+    </key>
+    <key name="city-3-smooth-seconds" type="b">
+      <default>true</default>
+    </key>
+    <key name="city-3-cities" type="as">
+      <default>['Asia/Tokyo']</default>
+      <summary>Time zones shown, as "Zone/Id" or "Zone/Id|Label"</summary>
+    </key>
+
+    <!-- City Digital (off by default) -->
+    <key name="city-digital-enabled" type="b">
+      <default>false</default>
+    </key>
+    <key name="city-digital-x" type="i">
+      <default>-1</default>
+    </key>
+    <key name="city-digital-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="city-digital-size" type="i">
+      <default>220</default>
+    </key>
+    <key name="city-digital-smooth-seconds" type="b">
+      <default>false</default>
+    </key>
+    <key name="city-digital-cities" type="as">
+      <default>['Asia/Tokyo']</default>
+      <summary>Time zones shown, as "Zone/Id" or "Zone/Id|Label"</summary>
+    </key>
+
     <!-- Calendar -->
     <key name="calendar-enabled" type="b">
       <default>true</default>
