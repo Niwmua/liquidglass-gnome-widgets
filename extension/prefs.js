@@ -320,8 +320,15 @@ export default class LiquidGlassWidgetsPrefs extends ExtensionPreferences {
     }
 
     _calendarGroup(settings) {
-        const group = new Adw.PreferencesGroup({title: _('Calendar')});
+        const group = new Adw.PreferencesGroup({
+            title: _('Calendar'),
+            description: _('The wide layout lists upcoming events from your calendars in GNOME Calendar (including online accounts). They are read on this computer only.'),
+        });
         group.add(switchRow(settings, 'calendar-enabled', _('Show on desktop')));
+        group.add(comboRow(settings, 'calendar-layout', _('Layout'),
+            [_('Month'), _('Wide, with upcoming events')]));
+        group.add(comboRow(settings, 'calendar-lookahead', _('Show events for the next'),
+            [_('7 days'), _('14 days'), _('30 days'), _('60 days')]));
         group.add(spinRow(settings, 'calendar-size', _('Size'), {lower: 140, upper: 500, step: 10}));
         group.add(comboRow(settings, 'calendar-first-day', _('First day of the week'),
             [_('Automatic'), _('Sunday'), _('Monday')]));

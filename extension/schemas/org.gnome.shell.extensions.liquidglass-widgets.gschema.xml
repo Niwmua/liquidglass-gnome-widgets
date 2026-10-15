@@ -191,6 +191,14 @@
     <key name="calendar-size" type="i">
       <default>200</default>
     </key>
+    <key name="calendar-layout" type="i">
+      <default>0</default>
+      <summary>0 = Month (square), 1 = Wide, with upcoming events</summary>
+    </key>
+    <key name="calendar-lookahead" type="i">
+      <default>2</default>
+      <summary>How far ahead the event list looks: 0 = 7, 1 = 14, 2 = 30, 3 = 60 days</summary>
+    </key>
     <key name="calendar-first-day" type="i">
       <default>0</default>
       <summary>0 = from the locale, 1 = Sunday, 2 = Monday</summary>

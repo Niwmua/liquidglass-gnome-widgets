@@ -12,7 +12,8 @@ Clocks page):
 - **World clocks** (`city-1`, `city-2`, `city-3`, `city-digital`): City I and II show up to four cities as a grid
   or a row with names, each dial light by day and dark by night in its city. City III and Digital show one city
   on the Clock III and Digital faces. Pick cities in the settings by searching city names or any system time zone.
-- **macOS Calendar** (`calendar`): the month grid. The wide layout with upcoming events is not ported yet.
+- **macOS Calendar** (`calendar`): the month grid and, in the Wide layout, upcoming events from your GNOME
+  calendars (including online accounts) grouped as today, this week and upcoming.
 - **macOS Weather** (`weather`): Small, Medium and Large layouts. Forecasts come from
   [Open-Meteo](https://open-meteo.com) (CC BY 4.0), so there is no account or API key. Pick your city in the
   settings with **Search for a city**.
@@ -54,6 +55,7 @@ installing or updating. Settings changes apply live.
 | `WeatherData.qml` (`XMLHttpRequest`) | `lib/weatherData.js` (libsoup 3), times in the forecast location's own time zone |
 | Free resizing of the applet | Size setting, plus a layout choice for the weather and the timer |
 | `PlasmaClock.Clock` per time zone | `GLib.TimeZone` / `GLib.DateTime`, refreshed each minute so DST changes are picked up |
+| Plasma calendar `EventPluginsManager` (Akonadi) | `helpers/calendar-events.js`, a separate gjs process reading Evolution Data Server, run every 10 minutes by `lib/calendarEvents.js` |
 | Plasma `Mpris2Model` | `lib/mpris.js` (Gio D-Bus proxies; picks the playing or most recently active player) |
 | QML `Image` + `MultiEffect` for album art | `lib/albumArt.js`: GdkPixbuf → cairo surface, median-cut palette as in the KDE widget |
 | Timer state in the plasmoid, KNotification | `lib/timerModel.js` owned by the extension and saved in GSettings; a MessageTray notification with the `alarm-clock-elapsed` sound |
@@ -83,6 +85,8 @@ extension/
   lib/mpris.js              media players over D-Bus
   lib/albumArt.js           album art loading and color sampling
   lib/lyrics.js             LRCLIB client and LRC parser
+  lib/calendarEvents.js     runs the events helper and keeps the latest events
+  helpers/calendar-events.js  reads events from Evolution Data Server (separate process)
   lib/worldTime.js          city codes/names for time zones (KDE's cities.js) and per-zone time
   widgets/clockAnalog.js    the analog clocks (I, II, III)
   widgets/clockDigital.js   the digital clock
