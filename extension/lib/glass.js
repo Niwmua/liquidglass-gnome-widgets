@@ -25,18 +25,36 @@ import Shell from 'gi://Shell';
 import * as Background from 'resource:///org/gnome/shell/ui/background.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-const BLUR_PAD = 48;
+export const BLUR_PAD = 48;
 // The KDE blur is a Dual Kawase pyramid whose reach roughly doubles per
 // level; Shell.BlurEffect takes a Gaussian radius. This keeps the default
 // (6) close to the KDE look.
-const BLUR_RADIUS_SCALE = 3;
-const MAX_BLUR_RADIUS = 200;
+export const BLUR_RADIUS_SCALE = 3;
+export const MAX_BLUR_RADIUS = 200;
 
 const UNIFORMS = [
     'size', 'radius', 'roundness', 'refractThickness', 'refractIOR',
     'refractScale', 'chromaStrength', 'tint', 'tintBottom', 'mousePos',
-    'mouseFade', 'specStrength',
+    'mouseFade', 'specStrength', 'frame',
 ];
+
+// Where an actor sits inside its offscreen effect's texture, as normalized
+// [x, y, width, height]. Mutter pads effect framebuffers (see
+// clutter_actor_box_enlarge_for_effects): the size is rounded and grows by
+// 3 px, with the far edge pushed out by 0.75 px and rounded up, so an
+// integer-placed actor gets 2 px of padding before it and 1 px after.
+// Sampling the texture as if it were exactly the actor reads that empty
+// padding at the edges.
+export function effectFrame(x, y, width, height) {
+    const axis = (start, size) => {
+        const padded = Math.round(size) + 3;
+        const paddedStart = Math.ceil(start + size + 0.75) - padded;
+        return [(start - paddedStart) / padded, size / padded];
+    };
+    const [fx, fw] = axis(x, width);
+    const [fy, fh] = axis(y, height);
+    return [fx, fy, fw, fh];
+}
 
 // Same math as liquidglass.frag, rewritten for a Cogl snippet: uniforms are
 // prefixed lg_ to stay clear of Cogl's names, and the texture is passed in
@@ -54,6 +72,7 @@ uniform vec4  lg_tintBottom;  // a > 0: vertical gradient from lg_tint to this
 uniform vec2  lg_mousePos;
 uniform float lg_mouseFade;
 uniform float lg_specStrength;
+uniform vec4  lg_frame;  // the actor's rect in the effect texture (effectFrame)
 
 // Squircle SDF with analytic outward normal: vec3(d, nx, ny).
 vec3 lg_sdfAndNormal(vec2 p) {
@@ -90,8 +109,10 @@ vec3 lg_sdfAndNormal(vec2 p) {
     return vec3(d, nrm);
 }
 
+// uv is actor-relative; stay half a texel inside the actor's own pixels.
 vec3 lg_sample(sampler2D tex, vec2 uv) {
-    return texture2D(tex, clamp(uv, vec2(0.0), vec2(1.0))).rgb;
+    vec2 inset = 0.5 / lg_size;
+    return texture2D(tex, lg_frame.xy + clamp(uv, inset, vec2(1.0) - inset) * lg_frame.zw).rgb;
 }
 
 vec3 lg_cornerSpec(vec2 p, float depthPx) {
@@ -167,7 +188,8 @@ vec4 lg_glass(sampler2D tex, vec2 uv) {
 `;
 
 const CODE = `
-cogl_color_out = lg_glass(cogl_sampler0, cogl_tex_coord_in[0].xy) * cogl_color_in.a;
+cogl_color_out = lg_glass(cogl_sampler0, (cogl_tex_coord_in[0].xy - lg_frame.xy) / lg_frame.zw) *
+    cogl_color_in.a;
 `;
 
 const LiquidGlassEffect = GObject.registerClass(
@@ -188,7 +210,7 @@ class LiquidGlassEffect extends Shell.GLSLEffect {
     }
 });
 
-function monitorIndexAt(x, y) {
+export function monitorIndexAt(x, y) {
     const {monitors, primaryIndex} = Main.layoutManager;
     const index = monitors.findIndex(m =>
         x >= m.x && x < m.x + m.width && y >= m.y && y < m.y + m.height);
@@ -249,6 +271,7 @@ class LiquidGlass extends Clutter.Actor {
         this._syncWallpaper();
 
         this._effect.setUniform('size', [this._width, this._height]);
+        this._effect.setUniform('frame', effectFrame(x, y, this._width, this._height));
         this._effect.queue_repaint();
     }
 

@@ -3,11 +3,22 @@
 A GNOME Shell extension port of [liquidglass-kde-widgets](https://github.com/jaxparrow07/liquidglass-kde-widgets)
 (macOS-style desktop widgets on a liquid-glass background). Licensed GPL-3.0, like the original.
 
-Ported so far (Clocks II, III, Digital and the world clocks are off by default; switch them on in the settings'
-Clocks page):
+![All widgets in Glass style](screenshots/widgets-glass.jpg)
+
+![All widgets in Solid style](screenshots/widgets-solid.jpg)
+
+*Every widget on GNOME Shell 50, in Glass style (top) and Solid style (bottom). The music track and calendar
+events are sample data. The wallpaper is Fedora's "Montclair".*
+
+## Widgets
+
+All the KDE widgets are ported. Clocks II, III, Digital, Glass Text and the world clocks are off by default; switch
+them on in the settings' Clocks page.
 
 - **macOS Clock I, II, III** (`clock-analog`, `clock-analog-2`, `clock-analog-3`): one class with a variant per
   clock. Clock III's ticks follow the glass edge.
+- **macOS Clock Glass Text** (`clock-glass-text`): the digits are the glass; the wallpaper refracts through every
+  stroke. Five fonts (Soft, Rounded, Rails, New York, Stencil) and an optional tinted text overlay.
 - **macOS Clock Digital** (`clock-digital`): its tick ring doubles as a seconds hand. Uses GNOME's 12/24-hour setting.
 - **World clocks** (`city-1`, `city-2`, `city-3`, `city-digital`): City I and II show up to four cities as a grid
   or a row with names, each dial light by day and dark by night in its city. City III and Digital show one city
@@ -48,6 +59,7 @@ installing or updating. Settings changes apply live.
 | Wallpaper via `Plasmoid.containment.wallpaperGraphicsObject` | Own `Background.BackgroundManager` per widget, offset to the widget's screen position |
 | Dual Kawase blur chain (`ShaderEffectSource`s) | `Shell.BlurEffect` on a padded box behind the glass |
 | `liquidglass.frag` (Qt RHI, `.qsb`) | Same math as a Cogl GLSL snippet in `lib/glass.js` (`Shell.GLSLEffect`) |
+| `TextGlass.qml` (mask → blur → glyph SDF shaders) + `liquidglasstext.frag` | `lib/glyphField.js` builds the same field on the CPU once a minute; `lib/textGlass.js` keeps it beside the wallpaper in one offscreen texture for its shader |
 | `MacOSColors.qml` | `lib/colors.js` |
 | kcfg `main.xml` + config QML pages | GSettings schema + libadwaita `prefs.js` |
 | QML `Canvas` hands, 16 ms timer | `St.DrawingArea` per hand, rotated each frame by a `Clutter.Timeline` |
@@ -75,6 +87,8 @@ extension/
   extension.js              enables/disables widgets from settings
   prefs.js                  settings window
   lib/glass.js              LiquidGlass actor + shader
+  lib/textGlass.js          text-shaped glass (Glass Text clock)
+  lib/glyphField.js         glyph coverage -> edge normal + depth field
   lib/desktopWidget.js      base class: placement, drag, menu, style
   lib/colors.js             color tokens
   lib/draw.js               cairo/Pango text and PNG helpers
@@ -90,6 +104,7 @@ extension/
   lib/worldTime.js          city codes/names for time zones (KDE's cities.js) and per-zone time
   widgets/clockAnalog.js    the analog clocks (I, II, III)
   widgets/clockDigital.js   the digital clock
+  widgets/clockGlassText.js the Glass Text clock
   widgets/worldClock.js     the world clocks (City I, II, III, Digital)
   widgets/calendar.js       the calendar
   widgets/weather.js        the weather card
@@ -97,8 +112,8 @@ extension/
   widgets/music.js          the music player (layouts, seek bar, lyrics view)
   icons/                    weather icon sets and music controls (from the KDE repo)
   schemas/                  GSettings schema
-fonts/                      SF Pro Rounded, SF Pro Display Regular/Light/Thin, Barlow Condensed Medium
-                            (installed to ~/.local/share/fonts)
+fonts/                      SF Pro Rounded, SF Pro Display Regular/Light/Thin, Barlow Condensed Medium and the
+                            five Glass Text fonts (installed to ~/.local/share/fonts)
 ```
 
 ## Adding another widget
@@ -115,3 +130,9 @@ Install `mutter-devkit` (`sudo dnf install mutter-devkit`) and run a nested shel
 ```bash
 dbus-run-session gnome-shell --devkit --wayland
 ```
+
+## Notes for shader work
+
+Mutter pads offscreen effect textures by 3 px (2 before the actor, 1 after; see
+`clutter_actor_box_enlarge_for_effects`). Both glass shaders get the actor's real rectangle in that texture as a
+uniform (`effectFrame()` in `lib/glass.js`). Without it, samples near the edges read the empty padding as black.

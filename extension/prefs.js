@@ -1,4 +1,5 @@
 import Adw from 'gi://Adw';
+import Gdk from 'gi://Gdk';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import Soup from 'gi://Soup?version=3.0';
@@ -267,6 +268,7 @@ export default class LiquidGlassWidgetsPrefs extends ExtensionPreferences {
             secondsTitle: _('Smooth seconds ring'),
             secondsSubtitle: _('Off moves the ring once a second, which uses less power.'),
         }));
+        page.add(this._glassTextGroup(settings));
         page.add(this._cityGroup(settings, 'city-1', _('World Clock I'), {
             description: _('Up to four cities on numbered dials. Each dial is light in its city’s daytime and dark at night.'),
             multi: true,
@@ -282,6 +284,47 @@ export default class LiquidGlassWidgetsPrefs extends ExtensionPreferences {
             description: _('One city on the digital clock.'),
         }));
         return page;
+    }
+
+    _glassTextGroup(settings) {
+        const group = new Adw.PreferencesGroup({
+            title: _('Glass Text Clock'),
+            description: _('The digits are the glass: the wallpaper refracts through every stroke. The glass sliders on the Appearance page shape it.'),
+        });
+        group.add(switchRow(settings, 'clock-glass-text-enabled', _('Show on desktop')));
+        group.add(spinRow(settings, 'clock-glass-text-size', _('Size'), {lower: 100, upper: 500, step: 10}));
+        group.add(comboRow(settings, 'clock-glass-text-glyph-font', _('Font'),
+            [_('Soft'), _('Rounded'), _('Rails'), _('New York'), _('Stencil')]));
+        group.add(sliderRow(settings, 'clock-glass-text-text-tint-pct', _('Text tint'),
+            {lower: 0, upper: 100, format: v => (v === 0 ? _('Off') : percent(v))}));
+
+        const colorRow = new Adw.ActionRow({
+            title: _('Text color'),
+            subtitle: _('Color of the tinted text over the glass digits.'),
+        });
+        const colorButton = new Gtk.ColorDialogButton({
+            dialog: new Gtk.ColorDialog({with_alpha: false}),
+            valign: Gtk.Align.CENTER,
+        });
+        const loadColor = () => {
+            const rgba = new Gdk.RGBA();
+            if (rgba.parse(settings.get_string('clock-glass-text-text-color')))
+                colorButton.rgba = rgba;
+        };
+        colorButton.connect('notify::rgba', () => {
+            const c = colorButton.rgba;
+            const hex = '#' + [c.red, c.green, c.blue]
+                .map(v => Math.round(v * 255).toString(16).padStart(2, '0')).join('');
+            if (settings.get_string('clock-glass-text-text-color') !== hex)
+                settings.set_string('clock-glass-text-text-color', hex);
+        });
+        settings.connect('changed::clock-glass-text-text-color', loadColor);
+        loadColor();
+        colorRow.add_suffix(colorButton);
+        group.add(colorRow);
+
+        group.add(positionRow(settings, 'clock-glass-text'));
+        return group;
     }
 
     _cityGroup(settings, prefix, title, {description, multi}) {

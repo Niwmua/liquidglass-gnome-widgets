@@ -178,6 +178,32 @@
       <summary>Time zones shown, as "Zone/Id" or "Zone/Id|Label"</summary>
     </key>
 
+    <!-- Glass Text clock (off by default) -->
+    <key name="clock-glass-text-enabled" type="b">
+      <default>false</default>
+    </key>
+    <key name="clock-glass-text-x" type="i">
+      <default>-1</default>
+    </key>
+    <key name="clock-glass-text-y" type="i">
+      <default>-1</default>
+    </key>
+    <key name="clock-glass-text-size" type="i">
+      <default>180</default>
+      <summary>Height; the width is 5/3 of it</summary>
+    </key>
+    <key name="clock-glass-text-glyph-font" type="i">
+      <default>0</default>
+      <summary>0 = Soft, 1 = Rounded, 2 = Rails, 3 = New York, 4 = Stencil</summary>
+    </key>
+    <key name="clock-glass-text-text-tint-pct" type="i">
+      <default>20</default>
+      <summary>Text drawn over the glass digits: 0 = refraction only, 100 = solid</summary>
+    </key>
+    <key name="clock-glass-text-text-color" type="s">
+      <default>'#ffffff'</default>
+    </key>
+
     <!-- Calendar -->
     <key name="calendar-enabled" type="b">
       <default>true</default>

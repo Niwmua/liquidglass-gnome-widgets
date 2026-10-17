@@ -44,7 +44,7 @@ class DesktopWidget extends St.Widget {
 
         this._interfaceSettings = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
 
-        this.glass = new LiquidGlass();
+        this.glass = this.createGlass();
         this.add_child(this.glass);
 
         this.body = new St.Widget();
@@ -244,6 +244,12 @@ class DesktopWidget extends St.Widget {
     }
 
     // --- Hooks for subclasses ---
+
+    // The backdrop actor: LiquidGlass, or anything with its setGeometry(),
+    // setParams() and setPointer().
+    createGlass() {
+        return new LiquidGlass();
+    }
 
     // Size settings, as suffixes after `<prefix>-`; a change re-runs readSize().
     sizeKeys() {

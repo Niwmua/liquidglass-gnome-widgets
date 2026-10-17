@@ -5,6 +5,7 @@ import {clearImageCache} from './lib/draw.js';
 import {TimerModel} from './lib/timerModel.js';
 import {AnalogClock} from './widgets/clockAnalog.js';
 import {DigitalClock} from './widgets/clockDigital.js';
+import {GlassTextClock} from './widgets/clockGlassText.js';
 import {CalendarWidget} from './widgets/calendar.js';
 import {MusicWidget} from './widgets/music.js';
 import {TimerWidget} from './widgets/timer.js';
@@ -17,6 +18,7 @@ const WIDGETS = [
     {key: 'clock-analog-2-enabled', create: (ext, settings) => new AnalogClock(ext, settings, 'clock-analog-2')},
     {key: 'clock-analog-3-enabled', create: (ext, settings) => new AnalogClock(ext, settings, 'clock-analog-3')},
     {key: 'clock-digital-enabled', create: (ext, settings) => new DigitalClock(ext, settings)},
+    {key: 'clock-glass-text-enabled', create: (ext, settings) => new GlassTextClock(ext, settings)},
     {key: 'city-1-enabled', create: (ext, settings) => new CityMultiClock(ext, settings, 'city-1')},
     {key: 'city-2-enabled', create: (ext, settings) => new CityMultiClock(ext, settings, 'city-2')},
     {key: 'city-3-enabled', create: (ext, settings) => new CityAnalogClock(ext, settings)},
